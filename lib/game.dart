@@ -15,13 +15,15 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   late Size _size;
   late int speed;
   late bool biteyou;
+  final Random _random = Random();
+  int reverse = 0;
+  int upreverse = 0;
 
   MyCrate(BuildContext context) {
     _size = MediaQuery.of(context).size;
     biteyou = false;
   }
-  final Random _random = Random();
-  int reverse = 0;
+
   Future<void> onLoad() async {
     sprite = await Sprite.load('char/lutra0.png');
 
@@ -45,11 +47,28 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
       width = height * 1.16216216;
     });
     Future.delayed(Duration(seconds: waitsecond + 2), origin);
-    x = (gameSize.x / (_random.nextInt(6) + 2));
-    y = (gameSize.y / (_random.nextDouble() * 1.9 + 1.07));
-    speed = 80 + _random.nextInt(100 - 80);
 
-    height = 50;
+    ktimer(1, (timer) {
+      upreverse = _random.nextInt(5);
+    });
+
+    x = (gameSize.x / (_random.nextInt(6) + 2));
+    y = (gameSize.y / (_random.nextInt(9) * 0.1 + 1.1));
+    speed = 100 + _random.nextInt(160 - 100);
+    height = gameSize.x / 15.48;
+    width = height * 2.021686747;
+  }
+
+  Future<void> turnback() async {
+    reverse = reverse + 1;
+
+    if (reverse % 2 == 0) {
+      x -= 20;
+      sprite = await Sprite.load('char/lutra0.png');
+    } else {
+      x += 20;
+      sprite = await Sprite.load('char/lutra1.png');
+    }
     width = height * 2.021686747;
   }
 
@@ -57,23 +76,20 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   Future<void> update(double t) async {
     super.update(t);
 
-    if (x >= 80 && x <= (_size.height - 60) * screenfactor - 120) {
+    if (x >= 100 && x <= (_size.height - 60) * screenfactor - 140) {
       if (reverse % 2 == 0) {
         x -= speed * t;
       } else {
         x += speed * t;
         // print(x);
       }
-    } else {
-      reverse = reverse + 1;
-      if (reverse % 2 == 0) {
-        x -= 20;
-        sprite = await Sprite.load('char/lutra0.png');
-      } else {
-        x += 20;
-        sprite = await Sprite.load('char/lutra1.png');
+      if (upreverse == 0 && y > (_size.height - 60) / 3) {
+        y -= speed / 2 * t;
+      } else if (upreverse == 1 && y < _size.height - 120) {
+        y += speed / 2 * t;
       }
-      width = height * 2.021686747;
+    } else {
+      turnback();
       // print(reverse);
     }
   }
@@ -82,23 +98,25 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
     sprite = await Sprite.load('char/bite.png');
     width = height * 1.16216216;
     biteyou = true;
-    Future.delayed(const Duration(milliseconds: 2500), origin);
+    Future.delayed(const Duration(milliseconds: 2000), origin);
   }
 
   @override
   bool onTapDown(TapDownInfo info) {
     if (width >= height * 2.021686747) {
-      //騷擾水獺 太壞了吧
       gameRef.score -= 58;
       tapwrong();
     } else if (width <= height * 2.021686747 && !biteyou) {
       gameRef.score += 67;
 
       origin();
-
-      //哼 讓你見識到露恰的可愛了吧
     }
     return super.onTapDown(info);
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
   }
 }
 
@@ -117,6 +135,7 @@ class MyGame extends FlameGame with HasTappables {
     timetext.text = counttime.toString();
     if (counttime == 0) {
       int em = score;
+      totalmarks.add(em);
       Navigator.pushAndRemoveUntil(
           _context,
           MaterialPageRoute(

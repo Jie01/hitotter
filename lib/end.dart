@@ -10,6 +10,12 @@ class End extends StatelessWidget {
   const End({Key? key, required this.mark, required this.round})
       : super(key: key);
 
+  int total() {
+    int x = 0;
+    for (int e in totalmarks) x = x + e;
+    return x;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -34,8 +40,8 @@ class End extends StatelessWidget {
                 children: [
                   Text(
                     (mark > 0 ? "哼 讓你見識到露恰的可愛了吧" : "你看看你 不務正業 騷擾水獺 太壞了吧") +
-                        "\n得分:$mark",
-                    style: TextStyle(fontSize: size.width / 27),
+                        "\n得分: $mark\n目前總得分: ${total()}",
+                    style: TextStyle(fontSize: size.width / 29),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -43,6 +49,7 @@ class End extends StatelessWidget {
                       FlatButton(
                           onPressed: () {
                             AudioManager.instance.stopBgm();
+                            totalmarks.clear();
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
@@ -50,16 +57,18 @@ class End extends StatelessWidget {
                                 (route) => false);
                           },
                           child: const Text("返回主畫面")),
-                      FlatButton(
-                          onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        GHome(round: round + 1)),
-                                (route) => false);
-                          },
-                          child: const Text("下一關")),
+                      round < 6
+                          ? FlatButton(
+                              onPressed: () {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            GHome(round: round + 1)),
+                                    (route) => false);
+                              },
+                              child: Text("第 ${round + 2} 關"))
+                          : const SizedBox(),
                     ],
                   ),
                 ],

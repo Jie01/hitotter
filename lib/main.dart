@@ -62,7 +62,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(size.width);
     return Scaffold(
       key: key,
       drawer: Container(

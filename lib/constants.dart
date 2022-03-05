@@ -4,6 +4,8 @@ import 'package:just_audio/just_audio.dart';
 
 enum enemyType { father, fish, you }
 
+List<int> totalmarks = [];
+
 const double screenfactor = 1.777777;
 
 const int limittime = 20;
@@ -53,3 +55,6 @@ class AudioManager {
     player.stop();
   }
 }
+
+void ktimer(int second, Function(Timer) onrun) =>
+    Timer.periodic(Duration(seconds: second), onrun);
