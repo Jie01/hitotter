@@ -199,7 +199,7 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 
 class GameHitOtter extends FlameGame with HasTappables {
   //
-  late BuildContext _context;
+  late BuildContext _gameMainContext;
 
   // otter manager
   late OtterManager _otterManager;
@@ -217,7 +217,8 @@ class GameHitOtter extends FlameGame with HasTappables {
   late int _round;
 
   // constructor
-  GameHitOtter(int round) {
+  GameHitOtter(BuildContext context, int round) {
+    _gameMainContext = context;
     _round = round;
 
     _otterManager = OtterManager();
@@ -243,7 +244,7 @@ class GameHitOtter extends FlameGame with HasTappables {
     if (remainTime <= 0) {
       totalMarks.add(_score);
       Navigator.pushAndRemoveUntil(
-          _context,
+          _gameMainContext,
           MaterialPageRoute(
               builder: (context) => End(
                     mark: _score,

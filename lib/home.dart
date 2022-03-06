@@ -17,7 +17,7 @@ class _GHomeState extends State<GHome> {
 
   @override
   void initState() {
-    baseGame = GameHitOtter(widget.round);
+    baseGame = GameHitOtter(context, widget.round);
     super.initState();
   }
 
