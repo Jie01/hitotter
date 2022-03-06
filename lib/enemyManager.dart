@@ -28,7 +28,7 @@ class OtterManager extends Component with HasGameRef<GameHitOtter> {
     final num = _random.nextInt(enemyType.values.length);
 
     final type = enemyType.values.elementAt(2);
-    final newEnemy = Otter(_context);
+    final newEnemy = Otter();
 
     gameRef.add(newEnemy);
 

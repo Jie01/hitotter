@@ -10,30 +10,43 @@ import 'package:game2/constants.dart';
 import 'package:game2/end.dart';
 import 'package:game2/enemyManager.dart';
 
+// horizon direction
+enum EHDirect {
+  ED_Left,
+  ED_Right,
+}
+
+// veridical direction
+enum EVDirect {
+  ED_Up,
+  ED_Down,
+}
+
 class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
   // creates a component that renders the crate.png sprite, with size 16 x 16
-  late Size _size;
   late int speed;
-  late bool biteyou;
   final Random _random = Random();
-  int reverse = 0;
-  int upreverse = 0;
 
-  Otter(BuildContext context) {
-    _size = MediaQuery.of(context).size;
-    biteyou = false;
-  }
+  EHDirect xDirection = EHDirect.ED_Left;
+  EVDirect yDirection = EVDirect.ED_Down;
+
+  // the size factor between game size and otter size
+  final double _sizeFactor = 0.06;
+
+  late Rect _swimRange;
+
+  String spritSrc = 'char/lutra0.png';
+
+  bool biteYou = false;
+  int signIndex = -1;
+
+  // constructor
+  Otter() {}
 
   Future<void> onLoad() async {
-    sprite = await Sprite.load('char/lutra0.png');
-
+    sprite = await Sprite.load(spritSrc);
     anchor = Anchor.center;
-  }
-
-  Future<void> origin() async {
-    width = height * 2.021686747;
-    sprite = await Sprite.load('char/lutra${reverse % 2 == 0 ? '0' : '1'}.png');
-    biteyou = false;
+    reset();
   }
 
   @override
@@ -43,75 +56,76 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     // be called once before the first time it is rendered.
 
     // wait 4 ~ 12S
-    int waitsecond = 4 + _random.nextInt(12 - 4);
-    Future.delayed(Duration(seconds: waitsecond), () async {
-      sprite = await Sprite.load('char/sign${_random.nextInt(5)}.png');
-      width = height * 1.16216216;
+    int waitSecond = 4 + _random.nextInt(12 - 4);
+    Future.delayed(Duration(seconds: waitSecond), () async {
+      signIndex = _random.nextInt(5);
     });
-    Future.delayed(Duration(seconds: waitsecond + 2), origin);
+    Future.delayed(Duration(seconds: waitSecond + 2), reset);
 
-    ktimer(1, (timer) {
-      upreverse = _random.nextInt(5);
+    setTimer(1, (timer) {
+      _shuffleDir();
     });
 
+    // init spawn position
     x = (gameSize.x / (_random.nextInt(6) + 2));
     y = (gameSize.y / (_random.nextInt(9) * 0.1 + 1.1));
+
+    // random direction
+    _shuffleDir();
+
+    // random speed
     speed = 100 + _random.nextInt(160 - 100);
-    height = gameSize.x / 15.48;
-    width = height * 2.021686747;
-  }
 
-  Future<void> turnback() async {
-    reverse = reverse + 1;
+    // calculate height
+    height = gameSize.x * _sizeFactor;
 
-    if (reverse % 2 == 0) {
-      x -= 20;
-      sprite = await Sprite.load('char/lutra0.png');
-    } else {
-      x += 20;
-      sprite = await Sprite.load('char/lutra1.png');
-    }
-    width = height * 2.021686747;
+    // calculate swim range
+    _swimRange =
+        Offset(0, gameSize.y * 0.2) & Size(gameSize.x, gameSize.y * 0.8);
+
+    // update picture
+    _updatePic();
   }
 
   @override
-  Future<void> update(double t) async {
-    super.update(t);
+  Future<void> update(double dt) async {
+    super.update(dt);
 
-    if (x >= 100 && x <= (_size.height - 60) * screenFactor - 140) {
-      if (reverse % 2 == 0) {
-        x -= speed * t;
-      } else {
-        x += speed * t;
-        // print(x);
-      }
-      if (upreverse == 0 && y > (_size.height - 60) / 3) {
-        y -= speed / 2 * t;
-      } else if (upreverse == 1 && y < _size.height - 120) {
-        y += speed / 2 * t;
-      }
-    } else {
-      turnback();
-      // print(reverse);
+    // update position
+    var xDirectionFactor = (xDirection == EHDirect.ED_Right) ? 1 : -1;
+    var yDirectionFactor = (yDirection == EVDirect.ED_Down) ? 1 : -1;
+    x += speed * dt * xDirectionFactor;
+    y += speed / 2 * dt * yDirectionFactor;
+
+    // x dir bump detect
+    if (((x - width / 2) < _swimRange.left && xDirection == EHDirect.ED_Left) ||
+        ((x + width / 2) > _swimRange.right &&
+            xDirection == EHDirect.ED_Right)) {
+      xDirection = (xDirection == EHDirect.ED_Left
+          ? EHDirect.ED_Right
+          : EHDirect.ED_Left);
     }
-  }
 
-  Future<void> tapwrong() async {
-    sprite = await Sprite.load('char/bite.png');
-    width = height * 1.16216216;
-    biteyou = true;
-    Future.delayed(const Duration(milliseconds: 2000), origin);
+    // y dir bump detect
+    if (((y - height / 2) < _swimRange.top && yDirection == EVDirect.ED_Up) ||
+        ((y + height / 2) > _swimRange.bottom &&
+            yDirection == EVDirect.ED_Down)) {
+      yDirection =
+          (yDirection == EVDirect.ED_Up ? EVDirect.ED_Down : EVDirect.ED_Up);
+    }
+
+    // update picture
+    _updatePic();
   }
 
   @override
   bool onTapDown(TapDownInfo info) {
-    if (width >= height * 2.021686747) {
+    if (signIndex == -1) {
       gameRef._score -= 58;
-      tapwrong();
-    } else if (width <= height * 2.021686747 && !biteyou) {
+      _tapWrong();
+    } else if (biteYou == false) {
       gameRef._score += 67;
-
-      origin();
+      signIndex = -1;
     }
     return super.onTapDown(info);
   }
@@ -119,6 +133,50 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
   @override
   void onRemove() {
     super.onRemove();
+  }
+
+  // reset
+  Future<void> reset() async {
+    biteYou = false;
+    signIndex = -1;
+  }
+
+  Future<void> _tapWrong() async {
+    biteYou = true;
+    // keep bite status, duration: 2s
+    Future.delayed(const Duration(seconds: 2), reset);
+  }
+
+  // shuffle direction
+  void _shuffleDir() {
+    int randVarH = _random.nextInt(100);
+    int randVarV = _random.nextInt(100);
+
+    xDirection = (randVarH % 2 == 0) ? EHDirect.ED_Left : EHDirect.ED_Right;
+    yDirection = (randVarV % 2 == 0) ? EVDirect.ED_Down : EVDirect.ED_Up;
+  }
+
+  // update picture
+  Future<void> _updatePic() async {
+    if (biteYou == true) {
+      _loadSprite('char/bite.png');
+    } else if (signIndex != -1) {
+      _loadSprite('char/sign$signIndex.png');
+    } else if (xDirection == EHDirect.ED_Left) {
+      _loadSprite('char/lutra0.png');
+    } else {
+      _loadSprite('char/lutra1.png');
+    }
+  }
+
+  // load sprite
+  void _loadSprite(String src) async {
+    // if path is same, don't need to change picture
+    if (spritSrc != src) {
+      sprite = await Sprite.load(src);
+      width = height * (sprite!.image.width / sprite!.image.height);
+      spritSrc = src;
+    }
   }
 }
 
@@ -198,10 +256,10 @@ class GameHitOtter extends FlameGame with HasTappables {
     await super.onLoad();
 
     // set background
-    final parallaxComponent = await loadParallaxComponent([
+    final backgroundComponent = await loadParallaxComponent([
       ParallaxImageData('background.png'),
     ]);
-    add(parallaxComponent);
+    add(backgroundComponent);
 
     // init enemy manager
     add(_otterManager);

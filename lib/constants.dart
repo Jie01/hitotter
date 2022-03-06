@@ -18,8 +18,7 @@ const String rule = """這裡有一堆披著水獺皮的露軍, 會不定時舉�
 點錯會讓水獺生氣 咬你""";
 
 void setGlobalTimer() {
-  // 1s timer
-  Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+  setTimer(1, (Timer timer) {
     if (remainTime > 0) {
       remainTime--;
     } else {
@@ -56,5 +55,6 @@ class AudioManager {
   }
 }
 
-void ktimer(int second, Function(Timer) onrun) =>
-    Timer.periodic(Duration(seconds: second), onrun);
+// set timer, unit: second
+void setTimer(int second, Function(Timer) callBack) =>
+    Timer.periodic(Duration(seconds: second), callBack);
