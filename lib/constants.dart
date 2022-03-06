@@ -4,24 +4,24 @@ import 'package:just_audio/just_audio.dart';
 
 enum enemyType { father, fish, you }
 
-List<int> totalmarks = [];
+List<int> totalMarks = [];
 
-const double screenfactor = 1.777777;
+const double screenFactor = 1.777777;
 
-const int limittime = 20;
+const int limitTime = 20;
 
-int counttime = limittime;
+int remainTime = limitTime;
 
 const String rule = """這裡有一堆披著水獺皮的露軍, 會不定時舉牌
 要在舉牌的時候點擊去淨化他們
 不然他們會感染成內心抖M不冷靜 外表正常的水獺
 點錯會讓水獺生氣 咬你""";
 
-void xyz(int round) {
-  counttime = limittime + round * 10;
+void setGlobalTimer() {
+  // 1s timer
   Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-    if (counttime > 0) {
-      counttime = (limittime + round * 10) - timer.tick;
+    if (remainTime > 0) {
+      remainTime--;
     } else {
       timer.cancel();
     }

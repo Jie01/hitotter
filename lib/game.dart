@@ -10,7 +10,7 @@ import 'package:game2/constants.dart';
 import 'package:game2/end.dart';
 import 'package:game2/enemyManager.dart';
 
-class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
+class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
   // creates a component that renders the crate.png sprite, with size 16 x 16
   late Size _size;
   late int speed;
@@ -19,7 +19,7 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   int reverse = 0;
   int upreverse = 0;
 
-  MyCrate(BuildContext context) {
+  Otter(BuildContext context) {
     _size = MediaQuery.of(context).size;
     biteyou = false;
   }
@@ -41,6 +41,8 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
     super.onGameResize(gameSize);
     // We don't need to set the position in the constructor, we can set it directly here since it will
     // be called once before the first time it is rendered.
+
+    // wait 4 ~ 12S
     int waitsecond = 4 + _random.nextInt(12 - 4);
     Future.delayed(Duration(seconds: waitsecond), () async {
       sprite = await Sprite.load('char/sign${_random.nextInt(5)}.png');
@@ -76,7 +78,7 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   Future<void> update(double t) async {
     super.update(t);
 
-    if (x >= 100 && x <= (_size.height - 60) * screenfactor - 140) {
+    if (x >= 100 && x <= (_size.height - 60) * screenFactor - 140) {
       if (reverse % 2 == 0) {
         x -= speed * t;
       } else {
@@ -104,10 +106,10 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   @override
   bool onTapDown(TapDownInfo info) {
     if (width >= height * 2.021686747) {
-      gameRef.score -= 58;
+      gameRef._score -= 58;
       tapwrong();
     } else if (width <= height * 2.021686747 && !biteyou) {
-      gameRef.score += 67;
+      gameRef._score += 67;
 
       origin();
     }
@@ -120,81 +122,112 @@ class MyCrate extends SpriteComponent with Tappable, HasGameRef<MyGame> {
   }
 }
 
-class MyGame extends FlameGame with HasTappables {
-  late EnemyManager _enemyManager;
+class GameHitOtter extends FlameGame with HasTappables {
+  //
   late BuildContext _context;
 
-  late TextComponent timetext;
-  late TextComponent _scoretext;
-  late int score;
+  // otter manager
+  late OtterManager _otterManager;
+
+  // game text component
+  late TextComponent _remainTimeText;
+
+  // score text
+  late TextComponent _scoreText;
+
+  // game score
+  int _score = 0;
+
+  // game round
   late int _round;
+
+  // constructor
+  GameHitOtter(BuildContext context, int round) {
+    _context = context;
+    _round = round;
+
+    _otterManager = OtterManager(_context);
+
+    // init text component style
+    _remainTimeText = TextComponent(
+        textRenderer: TextPaint(
+            style: const TextStyle(color: Colors.white, fontSize: 20)),
+        anchor: Anchor.topCenter);
+
+    _scoreText = TextComponent(
+        textRenderer: TextPaint(
+            style: const TextStyle(color: Colors.white, fontSize: 20)),
+        anchor: Anchor.topCenter);
+  }
 
   @override
   void update(double dt) {
-    _scoretext.text = score.toString();
-    timetext.text = counttime.toString();
-    if (counttime == 0) {
-      int em = score;
-      totalmarks.add(em);
+    // update component
+    _updateViewComponent();
+
+    // check game is finish or not
+    if (remainTime <= 0) {
+      totalMarks.add(_score);
       Navigator.pushAndRemoveUntil(
           _context,
           MaterialPageRoute(
               builder: (context) => End(
-                    mark: em,
+                    mark: _score,
                     round: _round,
                   )),
           (route) => false);
 
-      _enemyManager.reset();
+      _otterManager.reset();
 
       pauseEngine();
       AudioManager.instance.stopBgm();
-      score = 0;
     }
+
     super.update(dt);
   }
 
   @override
   void onGameResize(Vector2 canvasSize) {
     super.onGameResize(canvasSize);
+
+    _updateViewComponent();
   }
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+
+    // set background
     final parallaxComponent = await loadParallaxComponent([
       ParallaxImageData('background.png'),
-      // ParallaxImageData('trees.png'),
     ]);
     add(parallaxComponent);
-    _enemyManager = EnemyManager(_context);
-    add(_enemyManager);
-    xyz(_round);
 
-    score = 0;
-    _scoretext = TextComponent(
-      text: score.toString(),
-      textRenderer:
-          TextPaint(style: const TextStyle(color: Colors.white, fontSize: 20)),
-      anchor: Anchor.topCenter,
-      position: Vector2(size.x / 2, 10),
-    );
-    add(_scoretext);
+    // init enemy manager
+    add(_otterManager);
 
-    timetext = TextComponent(
-      text: counttime.toString(),
-      textRenderer:
-          TextPaint(style: const TextStyle(color: Colors.white, fontSize: 20)),
-      anchor: Anchor.topCenter,
-      position: Vector2(size.x - 60, 10),
-    );
-    add(timetext);
+    // reset score
+    _score = 0;
 
+    // set timer
+    remainTime = limitTime + _round * 10;
+    setGlobalTimer();
+
+    // add text component
+    add(_scoreText);
+    add(_remainTimeText);
+
+    // start BGM
     AudioManager.instance.startBgm();
   }
 
-  MyGame(BuildContext context, int round) {
-    _context = context;
-    _round = round;
+  // update view component
+  void _updateViewComponent() {
+    _remainTimeText.text = '剩餘時間: ' + remainTime.toString() + '秒';
+    _remainTimeText.position =
+        Vector2(size.x - _remainTimeText.width, _remainTimeText.height / 2);
+
+    _scoreText.text = _score.toString() + '分';
+    _scoreText.position = Vector2(size.x / 2, _scoreText.height / 2);
   }
 }

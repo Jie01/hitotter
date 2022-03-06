@@ -17,7 +17,7 @@ class _GHomeState extends State<GHome> {
 
   @override
   void initState() {
-    baseGame = MyGame(context, widget.round);
+    baseGame = GameHitOtter(context, widget.round);
     super.initState();
   }
 
@@ -27,7 +27,7 @@ class _GHomeState extends State<GHome> {
     return Scaffold(
       body: Center(
         child: SizedBox(
-          width: (size.height - 60) * screenfactor,
+          width: (size.height - 60) * screenFactor,
           height: size.height - 60,
           child: GameWidget(
             game: baseGame,

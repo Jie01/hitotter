@@ -7,14 +7,14 @@ import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:game2/game.dart';
 
-class EnemyManager extends Component with HasGameRef<MyGame> {
+class OtterManager extends Component with HasGameRef<GameHitOtter> {
   late Random _random;
   late Timer _timer;
   late int spawnLevel;
   late BuildContext _context;
   late List<Component> allotter;
 
-  EnemyManager(BuildContext context) {
+  OtterManager(BuildContext context) {
     _context = context;
     _random = Random();
     spawnLevel = 0;
@@ -28,7 +28,7 @@ class EnemyManager extends Component with HasGameRef<MyGame> {
     final num = _random.nextInt(enemyType.values.length);
 
     final type = enemyType.values.elementAt(2);
-    final newEnemy = MyCrate(_context);
+    final newEnemy = Otter(_context);
 
     gameRef.add(newEnemy);
 

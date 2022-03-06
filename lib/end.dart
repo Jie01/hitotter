@@ -12,7 +12,7 @@ class End extends StatelessWidget {
 
   int total() {
     int x = 0;
-    for (int e in totalmarks) x = x + e;
+    for (int e in totalMarks) x = x + e;
     return x;
   }
 
@@ -26,7 +26,7 @@ class End extends StatelessWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           color: const Color(0xffb5e2ff),
-          width: (size.height - 60) * screenfactor,
+          width: (size.height - 60) * screenFactor,
           height: size.height - 60,
           child: Row(
             children: [
@@ -49,7 +49,7 @@ class End extends StatelessWidget {
                       FlatButton(
                           onPressed: () {
                             AudioManager.instance.stopBgm();
-                            totalmarks.clear();
+                            totalMarks.clear();
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
