@@ -58,3 +58,17 @@ class AudioManager {
 // set timer, unit: second
 void setTimer(int second, Function(Timer) callBack) =>
     Timer.periodic(Duration(seconds: second), callBack);
+
+class Unity {
+  static Random _random = Random();
+
+  // get rand number from lowerLimit to upperLimit( include )
+  static int getRandRangeInt(int lowerLimit, int upperLimit) {
+    return lowerLimit + _random.nextInt(upperLimit - lowerLimit);
+  }
+
+  // get rand number from lowerLimit to upperLimit( include )
+  static double getRandRangeDouble(double lowerLimit, double upperLimit) {
+    return lowerLimit + _random.nextDouble() * (upperLimit - lowerLimit);
+  }
+}

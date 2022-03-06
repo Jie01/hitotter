@@ -78,8 +78,8 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     });
 
     // init spawn position
-    x = (gameSize.x / (_random.nextInt(6) + 2));
-    y = (gameSize.y / (_random.nextInt(9) * 0.1 + 1.1));
+    x = gameSize.x * Unity.getRandRangeDouble(0.2, 0.8);
+    y = gameSize.y * Unity.getRandRangeDouble(0.2, 0.8);
 
     // random direction
     _shuffleDir();
@@ -178,7 +178,6 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
         }
         break;
       case EOtterState.EOS_Sign:
-        _signIndex = Unity.getRandRangeInt(0, 5);
         _loadSprite('char/sign$_signIndex.png');
         break;
       case EOtterState.EOS_BiteYou:
