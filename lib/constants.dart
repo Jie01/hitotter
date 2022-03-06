@@ -68,7 +68,7 @@ class AudioManager {
 void setTimer(int second, Function(Timer) callBack) =>
     Timer.periodic(Duration(seconds: second), callBack);
 
-class Unity {
+class Utility {
   static Random _random = Random();
 
   // get rand number from lowerLimit to upperLimit( include )

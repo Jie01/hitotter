@@ -66,29 +66,29 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     // be called once before the first time it is rendered.
 
     // wait 4 ~ 12S
-    int waitSecond = Unity.getRandRangeInt(4, 12);
+    int waitSecond = Utility.getRandRangeInt(4, 12);
     Future.delayed(Duration(seconds: waitSecond), () async {
-      _signIndex = Unity.getRandRangeInt(0, 5);
+      _signIndex = Utility.getRandRangeInt(0, 5);
       _state = EOtterState.EOS_Sign;
     });
     Future.delayed(Duration(seconds: waitSecond + 2), reset);
 
     // set shuffle dir time
-    int shuffleTime = Unity.getRandRangeInt(1, 3);
+    int shuffleTime = Utility.getRandRangeInt(1, 3);
     setTimer(shuffleTime, (timer) {
       _shuffleDir();
     });
 
     // init spawn position
-    x = gameSize.x * Unity.getRandRangeDouble(0.2, 0.8);
-    y = gameSize.y * Unity.getRandRangeDouble(0.2, 0.8);
+    x = gameSize.x * Utility.getRandRangeDouble(0.2, 0.8);
+    y = gameSize.y * Utility.getRandRangeDouble(0.2, 0.8);
 
     // random direction
     _shuffleDir();
 
     // random speed
-    _speed.x = Unity.getRandRangeInt(100, 160) * speedFactor;
-    _speed.y = Unity.getRandRangeInt(100, 160) * speedFactor;
+    _speed.x = Utility.getRandRangeInt(100, 160) * speedFactor;
+    _speed.y = Utility.getRandRangeInt(100, 160) * speedFactor;
 
     // calculate height
     height = gameSize.x * _sizeFactor;
@@ -165,8 +165,8 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 
   // shuffle direction
   void _shuffleDir() {
-    int randVarH = Unity.getRandRangeInt(0, 100);
-    int randVarV = Unity.getRandRangeInt(0, 100);
+    int randVarH = Utility.getRandRangeInt(0, 100);
+    int randVarV = Utility.getRandRangeInt(0, 100);
 
     xDirection = (randVarH % 2 == 0) ? EHDirect.ED_Left : EHDirect.ED_Right;
     yDirection = (randVarV % 2 == 0) ? EVDirect.ED_Down : EVDirect.ED_Up;
