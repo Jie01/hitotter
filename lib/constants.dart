@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:async';
 
 import 'package:just_audio/just_audio.dart';
@@ -9,6 +10,8 @@ List<int> totalMarks = [];
 const double screenFactor = 1.777777;
 
 const int limitTime = 20;
+
+int maxOtter = 30;
 
 int remainTime = limitTime;
 

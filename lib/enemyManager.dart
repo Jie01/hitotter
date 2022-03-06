@@ -19,6 +19,10 @@ class OtterManager extends Component with HasGameRef<GameHitOtter> {
     _timer = Timer(2, repeat: true, onTick: () {
       // add new otter
       addNewOtter();
+      // limit otter count
+      if (_otterList.length >= maxOtter) {
+        _timer.stop();
+      }
     });
   }
 
