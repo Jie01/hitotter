@@ -217,11 +217,10 @@ class GameHitOtter extends FlameGame with HasTappables {
   late int _round;
 
   // constructor
-  GameHitOtter(BuildContext context, int round) {
-    _context = context;
+  GameHitOtter(int round) {
     _round = round;
 
-    _otterManager = OtterManager(_context);
+    _otterManager = OtterManager();
 
     // init text component style
     _remainTimeText = TextComponent(
@@ -231,7 +230,8 @@ class GameHitOtter extends FlameGame with HasTappables {
 
     _scoreText = TextComponent(
         textRenderer: TextPaint(
-            style: const TextStyle(color: Colors.white, fontSize: 20)),
+            style: const TextStyle(
+                color: Color.fromARGB(255, 29, 25, 25), fontSize: 20)),
         anchor: Anchor.topCenter);
   }
 

@@ -8,41 +8,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:game2/game.dart';
 
 class OtterManager extends Component with HasGameRef<GameHitOtter> {
-  late Random _random;
   late Timer _timer;
-  late int spawnLevel;
-  late BuildContext _context;
-  late List<Component> allotter;
+  late List<Component> _otterList;
 
-  OtterManager(BuildContext context) {
-    _context = context;
-    _random = Random();
-    spawnLevel = 0;
-    allotter = [];
+  // constructor
+  OtterManager() {
+    _otterList = [];
+
+    // add otter in each 2 second
     _timer = Timer(2, repeat: true, onTick: () {
-      spawnRanEnemy();
+      // add new otter
+      addNewOtter();
     });
   }
 
-  void spawnRanEnemy() {
-    final num = _random.nextInt(enemyType.values.length);
-
-    final type = enemyType.values.elementAt(2);
-    final newEnemy = Otter();
-
-    gameRef.add(newEnemy);
-
-    allotter.add(newEnemy);
+  // add new otter to list
+  void addNewOtter() {
+    final newOtter = Otter();
+    gameRef.add(newOtter);
+    _otterList.add(newOtter);
   }
 
+  // reset game
   void reset() {
-    spawnLevel = 0;
-    _timer = Timer(1, repeat: true, onTick: () {
-      spawnRanEnemy();
-    });
-    for (Component i in allotter) {
+    _timer.stop();
+    for (Component i in _otterList) {
       remove(i);
     }
+    _otterList.clear();
   }
 
   @override
@@ -57,18 +50,5 @@ class OtterManager extends Component with HasGameRef<GameHitOtter> {
   @override
   void update(double t) {
     _timer.update(t);
-
-    // var newSpawnlevel = gameRef.score ~/ 70;
-    // if (spawnLevel < newSpawnlevel && spawnLevel < 40) {
-    //   spawnLevel = newSpawnlevel;
-    //   _timer.stop();
-    //
-    //   var waittime = (3 / (1 + (0.1 * spawnLevel)));
-    //
-    //   _timer = Timer(waittime, repeat: true, onTick: () {
-    //     spawnRanEnemy();
-    //   });
-    //   _timer.start();
-    // }
   }
 }
