@@ -48,6 +48,7 @@ class _HomeState extends State<Home> {
     "sign4",
     "1",
     "2",
+    "3",
     "bite",
   ];
 
@@ -79,7 +80,7 @@ class _HomeState extends State<Home> {
         width: double.infinity,
         decoration: const BoxDecoration(
             image: DecorationImage(
-          image: AssetImage("assets/images/3.png"),
+          image: AssetImage("assets/images/NoCute.png"),
           fit: BoxFit.fitWidth,
         )),
         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -111,7 +112,7 @@ class _HomeState extends State<Home> {
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                        child: const Text("我知道"))
+                                        child: const Text("開始 (✪ω✪)"))
                                   ],
                                 )).then((value) {
                           Timer(const Duration(milliseconds: 1000), () {

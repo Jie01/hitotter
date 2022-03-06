@@ -138,6 +138,8 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
       gameRef._score += 67;
       reset();
     }
+
+    wasHitOtter = true;
     return super.onTapDown(info);
   }
 
@@ -221,6 +223,8 @@ class GameHitOtter extends FlameGame with HasTappables {
 
   // constructor
   GameHitOtter(BuildContext context, int round) {
+    wasHitOtter = false;
+
     _gameMainContext = context;
     _round = round;
 

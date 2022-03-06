@@ -17,6 +17,8 @@ int maxOtter = 30;
 
 int remainTime = limitTime;
 
+bool wasHitOtter = false;
+
 const String rule = """這裡有一堆披著水獺皮的露軍, 會不定時舉牌
 要在舉牌的時候點擊去淨化他們
 不然他們會感染成內心抖M不冷靜 外表正常的水獺
