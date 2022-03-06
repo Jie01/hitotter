@@ -33,7 +33,7 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
   EVDirect yDirection = EVDirect.ED_Down;
 
   // speed
-  int speed = 0;
+  late Vector2 _speed;
 
   // otter swim range
   late Rect _swimRange;
@@ -48,7 +48,9 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
   EOtterState _state = EOtterState.EOS_Normal;
 
   // constructor
-  Otter();
+  Otter() {
+    _speed = Vector2(0.0, 0.0);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -85,7 +87,8 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     _shuffleDir();
 
     // random speed
-    speed = Unity.getRandRangeInt(100, 160);
+    _speed.x = Unity.getRandRangeInt(100, 160) * speedFactor;
+    _speed.y = Unity.getRandRangeInt(100, 160) * speedFactor;
 
     // calculate height
     height = gameSize.x * _sizeFactor;
@@ -105,8 +108,8 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     // update position
     var xDirectionFactor = (xDirection == EHDirect.ED_Right) ? 1 : -1;
     var yDirectionFactor = (yDirection == EVDirect.ED_Down) ? 1 : -1;
-    x += speed * dt * xDirectionFactor;
-    y += speed / 2 * dt * yDirectionFactor;
+    x += _speed.x * dt * xDirectionFactor;
+    y += _speed.y * dt * yDirectionFactor;
 
     // x dir bump detect
     if (((x - width / 2) < _swimRange.left && xDirection == EHDirect.ED_Left) ||

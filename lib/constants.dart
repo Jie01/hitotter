@@ -15,6 +15,8 @@ int maxRound = 7;
 
 int maxOtter = 30;
 
+double speedFactor = 1.0;
+
 int remainTime = limitTime;
 
 bool wasHitOtter = false;
