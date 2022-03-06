@@ -230,8 +230,7 @@ class GameHitOtter extends FlameGame with HasTappables {
 
     _scoreText = TextComponent(
         textRenderer: TextPaint(
-            style: const TextStyle(
-                color: Color.fromARGB(255, 29, 25, 25), fontSize: 20)),
+            style: const TextStyle(color: Colors.white, fontSize: 20)),
         anchor: Anchor.topCenter);
   }
 
