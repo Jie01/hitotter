@@ -57,7 +57,7 @@ class End extends StatelessWidget {
                                 (route) => false);
                           },
                           child: const Text("返回主畫面")),
-                      round < 6
+                      round <= maxRound
                           ? FlatButton(
                               onPressed: () {
                                 Navigator.pushAndRemoveUntil(
@@ -67,7 +67,7 @@ class End extends StatelessWidget {
                                             GHome(round: round + 1)),
                                     (route) => false);
                               },
-                              child: Text("第 ${round + 2} 關"))
+                              child: Text("下一關(${round + 1}/$maxRound)"))
                           : const SizedBox(),
                     ],
                   ),

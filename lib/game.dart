@@ -198,7 +198,7 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 }
 
 class GameHitOtter extends FlameGame with HasTappables {
-  //
+  // game main context
   late BuildContext _gameMainContext;
 
   // otter manager
@@ -209,6 +209,9 @@ class GameHitOtter extends FlameGame with HasTappables {
 
   // score text
   late TextComponent _scoreText;
+
+  // round text
+  late TextComponent _roundText;
 
   // game score
   int _score = 0;
@@ -230,6 +233,11 @@ class GameHitOtter extends FlameGame with HasTappables {
         anchor: Anchor.topCenter);
 
     _scoreText = TextComponent(
+        textRenderer: TextPaint(
+            style: const TextStyle(color: Colors.white, fontSize: 20)),
+        anchor: Anchor.topCenter);
+
+    _roundText = TextComponent(
         textRenderer: TextPaint(
             style: const TextStyle(color: Colors.white, fontSize: 20)),
         anchor: Anchor.topCenter);
@@ -285,12 +293,13 @@ class GameHitOtter extends FlameGame with HasTappables {
     _score = 0;
 
     // set timer
-    remainTime = limitTime + _round * 10;
+    remainTime = limitTime + (_round - 1) * 10;
     setGlobalTimer();
 
     // add text component
     add(_scoreText);
     add(_remainTimeText);
+    add(_roundText);
 
     // start BGM
     AudioManager.instance.startBgm();
@@ -304,5 +313,8 @@ class GameHitOtter extends FlameGame with HasTappables {
 
     _scoreText.text = _score.toString() + '分';
     _scoreText.position = Vector2(size.x / 2, _scoreText.height / 2);
+
+    _roundText.text = '關卡: ' + _round.toString() + '/' + maxRound.toString();
+    _roundText.position = Vector2(50, _scoreText.height / 2);
   }
 }

@@ -125,7 +125,7 @@ class _HomeState extends State<Home> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const GHome(round: 0)));
+                                        const GHome(round: 1)));
                           });
                         });
                       },

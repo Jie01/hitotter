@@ -11,6 +11,8 @@ const double screenFactor = 1.777777;
 
 const int limitTime = 20;
 
+int maxRound = 7;
+
 int maxOtter = 30;
 
 int remainTime = limitTime;
