@@ -22,27 +22,35 @@ enum EVDirect {
   ED_Down,
 }
 
+enum EOtterState { EOS_Normal, EOS_Sign, EOS_BiteYou }
+
 class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
-  // creates a component that renders the crate.png sprite, with size 16 x 16
-  late int speed;
-  final Random _random = Random();
-
-  EHDirect xDirection = EHDirect.ED_Left;
-  EVDirect yDirection = EVDirect.ED_Down;
-
   // the size factor between game size and otter size
   final double _sizeFactor = 0.06;
 
+  // direction
+  EHDirect xDirection = EHDirect.ED_Left;
+  EVDirect yDirection = EVDirect.ED_Down;
+
+  // speed
+  int speed = 0;
+
+  // otter swim range
   late Rect _swimRange;
 
+  // sprit picture source
   String spritSrc = 'char/lutra0.png';
 
-  bool biteYou = false;
-  int signIndex = -1;
+  // sign picture index
+  int _signIndex = 0;
+
+  // otter state
+  EOtterState _state = EOtterState.EOS_Normal;
 
   // constructor
-  Otter() {}
+  Otter();
 
+  @override
   Future<void> onLoad() async {
     sprite = await Sprite.load(spritSrc);
     anchor = Anchor.center;
@@ -56,13 +64,16 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     // be called once before the first time it is rendered.
 
     // wait 4 ~ 12S
-    int waitSecond = 4 + _random.nextInt(12 - 4);
+    int waitSecond = Unity.getRandRangeInt(4, 12);
     Future.delayed(Duration(seconds: waitSecond), () async {
-      signIndex = _random.nextInt(5);
+      _signIndex = Unity.getRandRangeInt(0, 5);
+      _state = EOtterState.EOS_Sign;
     });
     Future.delayed(Duration(seconds: waitSecond + 2), reset);
 
-    setTimer(1, (timer) {
+    // set shuffle dir time
+    int shuffleTime = Unity.getRandRangeInt(1, 3);
+    setTimer(shuffleTime, (timer) {
       _shuffleDir();
     });
 
@@ -74,7 +85,7 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     _shuffleDir();
 
     // random speed
-    speed = 100 + _random.nextInt(160 - 100);
+    speed = Unity.getRandRangeInt(100, 160);
 
     // calculate height
     height = gameSize.x * _sizeFactor;
@@ -120,12 +131,12 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 
   @override
   bool onTapDown(TapDownInfo info) {
-    if (signIndex == -1) {
+    if (_state == EOtterState.EOS_Normal) {
       gameRef._score -= 58;
       _tapWrong();
-    } else if (biteYou == false) {
+    } else if (_state == EOtterState.EOS_Sign) {
       gameRef._score += 67;
-      signIndex = -1;
+      reset();
     }
     return super.onTapDown(info);
   }
@@ -137,20 +148,20 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 
   // reset
   Future<void> reset() async {
-    biteYou = false;
-    signIndex = -1;
+    _state = EOtterState.EOS_Normal;
   }
 
+  // tap wrong otter
   Future<void> _tapWrong() async {
-    biteYou = true;
+    _state = EOtterState.EOS_BiteYou;
     // keep bite status, duration: 2s
     Future.delayed(const Duration(seconds: 2), reset);
   }
 
   // shuffle direction
   void _shuffleDir() {
-    int randVarH = _random.nextInt(100);
-    int randVarV = _random.nextInt(100);
+    int randVarH = Unity.getRandRangeInt(0, 100);
+    int randVarV = Unity.getRandRangeInt(0, 100);
 
     xDirection = (randVarH % 2 == 0) ? EHDirect.ED_Left : EHDirect.ED_Right;
     yDirection = (randVarV % 2 == 0) ? EVDirect.ED_Down : EVDirect.ED_Up;
@@ -158,14 +169,21 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
 
   // update picture
   Future<void> _updatePic() async {
-    if (biteYou == true) {
-      _loadSprite('char/bite.png');
-    } else if (signIndex != -1) {
-      _loadSprite('char/sign$signIndex.png');
-    } else if (xDirection == EHDirect.ED_Left) {
-      _loadSprite('char/lutra0.png');
-    } else {
-      _loadSprite('char/lutra1.png');
+    switch (_state) {
+      case EOtterState.EOS_Normal:
+        if (xDirection == EHDirect.ED_Left) {
+          _loadSprite('char/lutra0.png');
+        } else {
+          _loadSprite('char/lutra1.png');
+        }
+        break;
+      case EOtterState.EOS_Sign:
+        _signIndex = Unity.getRandRangeInt(0, 5);
+        _loadSprite('char/sign$_signIndex.png');
+        break;
+      case EOtterState.EOS_BiteYou:
+        _loadSprite('char/bite.png');
+        break;
     }
   }
 
