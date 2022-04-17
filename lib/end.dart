@@ -10,10 +10,37 @@ class End extends StatelessWidget {
   const End({Key? key, required this.mark, required this.round})
       : super(key: key);
 
-  int total() {
-    int x = 0;
-    for (int e in totalmarks) x = x + e;
-    return x;
+  int totalScore() {
+    int scoreSum = 0;
+    for (int score in totalMarks) scoreSum = scoreSum + score;
+    return scoreSum;
+  }
+
+  String get endText {
+    String ret = '';
+
+    if (mark > 0) {
+      ret += "哼 讓你見識到露恰的可愛了吧\n";
+    } else if (wasHitOtter) {
+      ret += "你看看你 不務正業 騷擾水獺\n太壞了吧\n";
+    } else {
+      ret += "一隻水獺都摸不到 好可憐歐\n";
+    }
+
+    ret += "得分: $mark\n";
+    ret += "目前總得分: ${totalScore()}";
+
+    return ret;
+  }
+
+  Image get endImage {
+    if (mark > 0) {
+      return Image.asset("images/char/1.png");
+    } else if (wasHitOtter) {
+      return Image.asset("images/char/2.png");
+    } else {
+      return Image.asset("images/char/3.png");
+    }
   }
 
   @override
@@ -26,22 +53,19 @@ class End extends StatelessWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           color: const Color(0xffb5e2ff),
-          width: (size.height - 60) * screenfactor,
+          width: (size.height - 60) * screenFactor,
           height: size.height - 60,
           child: Row(
             children: [
-              Expanded(
-                  child: Image.asset(
-                      "assets/images/char/${mark > 0 ? '1' : '2'}.png")),
+              Expanded(child: endImage),
               const SizedBox(width: 10),
               Expanded(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    (mark > 0 ? "哼 讓你見識到露恰的可愛了吧" : "你看看你 不務正業 騷擾水獺 太壞了吧") +
-                        "\n得分: $mark\n目前總得分: ${total()}",
-                    style: TextStyle(fontSize: size.width / 29),
+                    endText,
+                    style: TextStyle(fontSize: size.width / 35),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -49,7 +73,9 @@ class End extends StatelessWidget {
                       FlatButton(
                           onPressed: () {
                             AudioManager.instance.stopBgm();
-                            totalmarks.clear();
+                            totalMarks.clear();
+                            if (round == maxRound && totalScore() == 520)
+                              AudioManager.instance.onhitsign("end");
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
@@ -57,7 +83,7 @@ class End extends StatelessWidget {
                                 (route) => false);
                           },
                           child: const Text("返回主畫面")),
-                      round < 6
+                      round < maxRound
                           ? FlatButton(
                               onPressed: () {
                                 Navigator.pushAndRemoveUntil(
@@ -67,7 +93,7 @@ class End extends StatelessWidget {
                                             GHome(round: round + 1)),
                                     (route) => false);
                               },
-                              child: Text("第 ${round + 2} 關"))
+                              child: Text("下一關(${round + 1}/$maxRound)"))
                           : const SizedBox(),
                     ],
                   ),

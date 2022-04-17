@@ -1,9 +1,13 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:game2/constants.dart';
 import 'package:game2/home.dart';
+import 'package:game2/setting.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +52,7 @@ class _HomeState extends State<Home> {
     "sign4",
     "1",
     "2",
+    "3",
     "bite",
   ];
 
@@ -56,6 +61,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     load = false;
+
     super.initState();
   }
 
@@ -64,22 +70,13 @@ class _HomeState extends State<Home> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       key: key,
-      drawer: Container(
-        color: Colors.white,
-        width: size.width / 2.5,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: const [
-            Text("之後加吧\n 耶嘿>30"),
-          ],
-        ),
-      ),
+      drawer: const Kdrawer(),
       body: Container(
         height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
             image: DecorationImage(
-          image: AssetImage("assets/images/3.png"),
+          image: AssetImage("assets/images/NoCute.png"),
           fit: BoxFit.fitWidth,
         )),
         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -111,7 +108,7 @@ class _HomeState extends State<Home> {
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                        child: const Text("我知道"))
+                                        child: const Text("開始 (>ω<)"))
                                   ],
                                 )).then((value) {
                           Timer(const Duration(milliseconds: 1000), () {
@@ -125,7 +122,7 @@ class _HomeState extends State<Home> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const GHome(round: 0)));
+                                        const GHome(round: 1)));
                           });
                         });
                       },
