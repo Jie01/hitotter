@@ -35,11 +35,11 @@ class End extends StatelessWidget {
 
   Image get endImage {
     if (mark > 0) {
-      return Image.asset("images/char/1.png");
+      return Image.asset("assets/images/char/1.png");
     } else if (wasHitOtter) {
-      return Image.asset("images/char/2.png");
+      return Image.asset("assets/images/char/2.png");
     } else {
-      return Image.asset("images/char/3.png");
+      return Image.asset("assets/images/char/3.png");
     }
   }
 

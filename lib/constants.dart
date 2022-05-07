@@ -5,6 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+List images = [
+  "lutra0",
+  "lutra1",
+  ...List.generate(12, (index) => "sign$index"),
+  "1",
+  "2",
+  "3",
+  "bite",
+];
+
 enum enemyType { father, fish, you }
 
 List<int> totalMarks = [];
@@ -22,7 +32,7 @@ int maxRound = 7;
 
 int maxOtter = 30;
 
-double volume = 50;
+double volume = 100;
 
 double speedFactor = 1.0;
 
@@ -61,7 +71,7 @@ class AudioManager {
   }
 
   Future<void> onhitsign(String i) async {
-    await signplayer.setAsset('assets/audios/$i.mp3');
+    await signplayer.setAsset('assets/audios/$i.wav');
     await signplayer.setLoopMode(LoopMode.off);
     await signplayer.play();
   }

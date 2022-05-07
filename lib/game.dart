@@ -68,7 +68,7 @@ class Otter extends SpriteComponent with Tappable, HasGameRef<GameHitOtter> {
     // wait 4 ~ 12S
     int waitSecond = Utility.getRandRangeInt(4, 12);
     Future.delayed(Duration(seconds: waitSecond), () async {
-      _signIndex = Utility.getRandRangeInt(0, 5);
+      _signIndex = Utility.getRandRangeInt(0, 12);
       _state = EOtterState.EOS_Sign;
     });
     Future.delayed(Duration(seconds: waitSecond + 2), reset);

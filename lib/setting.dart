@@ -66,7 +66,7 @@ class KdrawerState extends State<Kdrawer> {
                   Row(
                     children: [
                       const Text(
-                        "聲音",
+                        "背景音量",
                         style: mediumstyle,
                       ),
                       const SizedBox(width: 10),
